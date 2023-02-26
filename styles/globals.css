@@ -1,0 +1,42 @@
+.padd{
+  margin-right: 20px;
+  
+}
+.backgroundimage {
+  background-image: url('/complete.jpg');
+  height: 568px;
+  background-size: cover;
+  background-position: center;
+}
+.nostyle{
+  text-decoration: none;
+}
+.miding{
+  font-size: 70px;
+  padding-top: 150px;
+  color:white;
+}
+.coloring{
+  color: white;
+
+}
+.paddingtop{
+  padding-top: 60px;
+  
+}
+.allevents{
+  padding-top: 50px;
+  text-align: center;
+}
+.backo{
+  margin-top:40px;
+  height: 100px;
+  background-color: lightblue;
+}
+.texting{
+  padding: 30px
+}
+.nostylel{
+  text-decoration: none;
+  color: black;
+}
