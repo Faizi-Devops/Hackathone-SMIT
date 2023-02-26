@@ -3,12 +3,10 @@ import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "@/config/fire";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-type A = {
 
-}
 
 const Events = () => {
-    const [data, setData] = useState([])
+    const [data, setData] = useState<any[]>([])
     const [search,setSearch]=useState("")
 
     const alpha = (e:any) =>{
@@ -57,7 +55,7 @@ const Events = () => {
         console.log("data mein kuch na kuch", ...data);
 
         try {
-            const docRef = await addDoc(collection(db, "attendies"), ...data);
+            const docRef = await addDoc(collection(db, "attendies"), {...data});
             toast.success("Data Successfully Distached")
             console.log("Document written with ID: ", docRef.id);
         } catch (e) {
@@ -91,7 +89,7 @@ const Events = () => {
                     </tr>
                 </thead>
                 {
-                    data.filter((item)=>item.Title.includes(search)).map((value, index) => {
+                    data.filter((item)=>item.Title.includes(search)).map((value:any, index) => {
 
                         return (
                             <tbody>

@@ -66,7 +66,7 @@ const Showevents = () =>{
                     </tr>
                 </thead>
                 {
-                    data.map((value, index) => {
+                    data.map((value:any, index) => {
                         return (
                             <tbody>
                                 <tr>

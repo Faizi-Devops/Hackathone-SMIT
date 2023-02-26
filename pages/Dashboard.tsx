@@ -12,7 +12,7 @@ type A = {
     Location: string,
     Date: string,
     Time: string,
-    id?: string
+    id?: any
 }
 
 const Dashboard = () => {
@@ -161,7 +161,7 @@ const Dashboard = () => {
 
 
     }
-    const onEditHandler = (val: A) => {
+    const onEditHandler = (val:any) => {
         setFlag(true)
         setIndexing(val.id)
         setDating(val.Date)
@@ -267,7 +267,7 @@ const Dashboard = () => {
                 {
                     data.map((value: A, index: number) => {
                         return (
-                            <tbody>
+                            <tbody key={index}>
                                 <tr>
                                     <th scope="row">{index + 1}</th>
                                     <td>{value.Title}</td>

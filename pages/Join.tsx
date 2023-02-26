@@ -3,6 +3,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "@/config/fire";
 
+
 const Join = () => {
     const [data, setData] = useState([])
     useEffect(() => {
@@ -64,7 +65,7 @@ const Join = () => {
                     </tr>
                 </thead>
                 {
-                    data.map((value, index) => {
+                    data.map((value:any, index) => {
                         return (
                             <tbody>
                                 <tr>
