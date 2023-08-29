@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getDocs } from "firebase/firestore";
 import { collection } from "firebase/firestore";
 import { db } from "@/config/fire";
+import axios from "axios";
 const Showevents = () =>{
     const [data, setData] = useState([])
    
@@ -15,31 +16,13 @@ const Showevents = () =>{
 
     const orReadData = async () => {
         try {
-
-            const querySnapshot = await getDocs(collection(db, "attendies"));
-            let todosList: any = []
-            querySnapshot.forEach((doc) => {
-                todosList.push({
-                    Title: doc.data().Title,
-                    Description: doc.data().Description,
-                    Location: doc.data().Location,
-                    id: doc.id,
-                    Time: doc.data().Time,
-                    Date: doc.data().Date
-
-                });
-                
-            });
-            setData(todosList)
-
-            console.log('todos', todosList);
-
-          
-
-
+            const response = await axios.get("http://localhost:5000/Todo");
+            console.log(response.data)
+            setData(response.data);
+            
         } catch (error) {
-            console.log(error);
-
+            console.log(error)
+            
         }
 
 
@@ -68,15 +51,15 @@ const Showevents = () =>{
                 {
                     data.map((value:any, index) => {
                         return (
-                            <tbody>
+                            <tbody key = {index}>
                                 <tr>
                                     <th scope="row">{index+1}</th>
                                     
-                                    <td>{value.Title}</td>
-                                    <td>{value.Location}</td>
-                                    <td>{value.Date}</td>
-                                    <td>{value.Description}</td>
-                                    <td>{value.Time}</td>
+                                    <td>{value.title}</td>
+                                    <td>{value.location}</td>
+                                    <td>{value.date}</td>
+                                    <td>{value.description}</td>
+                                    <td>{value.time}</td>
                                     
                                 </tr>
 

@@ -3,6 +3,7 @@ import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "@/config/fire";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 
 const Events = () => {
@@ -25,29 +26,13 @@ const Events = () => {
 
     const getData = async () => {
         try {
-
-            const querySnapshot = await getDocs(collection(db, "events"));
-            let todosList: any = []
-            querySnapshot.forEach((doc) => {
-                todosList.push({
-                    Title: doc.data().Title,
-                    Description: doc.data().Description,
-                    Location: doc.data().Location,
-                    id: doc.id,
-                    Time: doc.data().Time,
-                    Date: doc.data().Date
-
-                });
-            });
-
-            console.log('todos', todosList);
-
-            setData(todosList)
-
-
+            const response = await axios.get("http://localhost:5000/Todo");
+            console.log(response.data)
+            setData(response.data);
+            
         } catch (error) {
-            console.log(error);
-
+            console.log(error)
+            
         }
 
     }
@@ -89,18 +74,18 @@ const Events = () => {
                     </tr>
                 </thead>
                 {
-                    data.filter((item)=>item.Title.includes(search)).map((value:any, index) => {
+                    data.filter((item)=>item.title.includes(search)).map((value:any, index) => {
 
                         return (
                             <tbody>
                                 <tr>
                                     <th scope="row">{index + 1}</th>
-                                    <td>{value.id}</td>
-                                    <td>{value.Title}</td>
-                                    <td>{value.Location}</td>
-                                    <td>{value.Date}</td>
-                                    <td>{value.Description}</td>
-                                    <td>{value.Time}</td>
+                                    <td>{value._id}</td>
+                                    <td>{value.title}</td>
+                                    <td>{value.location}</td>
+                                    <td>{value.date}</td>
+                                    <td>{value.description}</td>
+                                    <td>{value.time}</td>
                                     <td>
                                         <button type="button" className="btn btn-primary rounded-pill" onClick={onAttendies}>Join Event</button>
                                     </td>

@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import styles from '../styles/Dashboard.module.css'
 import { collection, addDoc, deleteDoc, doc,updateDoc } from "firebase/firestore";
+import moment from 'moment';
 import { db } from '@/config/fire'
 import { toast } from 'react-toastify';
 import Navbar from '@/components/Navbar/Navbar';
 import { getDocs } from 'firebase/firestore';
+import axios from 'axios';
 
 type A = {
-    Title: string,
-    Description: string,
-    Location: string,
-    Date: string,
-    Time: string,
-    id?: any
+    title: string,
+    description: string,
+    location: string,
+    date: any,
+    time: string,
+    _id?: any
 }
 
 const Dashboard = () => {
@@ -21,7 +23,7 @@ const Dashboard = () => {
     const [titling, setTitling] = useState("")
     const [descripting, setDescripting] = useState("")
     const [locating, setLocating] = useState("")
-    const [dating, setDating] = useState("")
+    const [dating, setDating] = useState(useState(moment().format('YYYY-MM-DD')))
     const [timing, setTiming] = useState("")
     const [flag, setFlag] = useState(false)
     const [indexing, setIndexing] = useState("")
@@ -29,27 +31,32 @@ const Dashboard = () => {
 
     useEffect(() => {
         onFetchData()
-    })
+    },[])
     const onFetchData = async () => {
         try {
+            const response = await axios.get("http://localhost:5000/Todo");
+            console.log(response.data)
+            setData(response.data);
+            
 
-            const querySnapshot = await getDocs(collection(db, "events"));
-            let todosList: any = []
-            querySnapshot.forEach((doc) => {
-                todosList.push({
-                    Title: doc.data().Title,
-                    Description: doc.data().Description,
-                    Location: doc.data().Location,
-                    id: doc.id,
-                    Time: doc.data().Time,
-                    Date: doc.data().Date
 
-                });
+            // const querySnapshot = await getDocs(collection(db, "events"));
+            // let todosList: any = []
+            // querySnapshot.forEach((doc) => {
+            //     todosList.push({
+            //         Title: doc.data().Title,
+            //         Description: doc.data().Description,
+            //         Location: doc.data().Location,
+            //         id: doc.id,
+            //         Time: doc.data().Time,
+            //         Date: doc.data().Date
 
-            });
-            setData(todosList)
+            //     });
 
-            console.log('todos', todosList);
+            // });
+            
+
+            // console.log('todos', todosList);
 
 
 
@@ -87,19 +94,18 @@ const Dashboard = () => {
     const onAddHandler = async () => {
         if (titling && timing && locating && descripting && dating !== "") {
             let adding: A = {
-                Title: titling,
-                Description: descripting,
-                Location: locating,
-                Date: dating,
-                Time: timing
+                title: titling,
+                description: descripting,
+                location: locating,
+                date: dating,
+                time: timing
             }
 
             try {
-                const docRef = await addDoc(collection(db, "events"), adding);
-
-
-                console.log("Document written with ID: ", docRef.id);
-                setData([...data, { ...adding, id: docRef.id }])
+                console.log("first log")
+                 await axios.post("http://localhost:5000/Todo", adding)
+                 console.log("second log")
+                setData([...data,adding])
 
                 setDating("")
                 setDescripting("")
@@ -129,62 +135,64 @@ const Dashboard = () => {
 
 
     }
+    const onEditHandler = (valueing:A) =>{
+        setIndexing(valueing._id)
+        setFlag(true)
+        setTitling(valueing.title);
+        setDescripting(valueing.description)
+        setLocating(valueing.location)
+        setTiming(valueing.time);
+        setDating(moment(valueing.date).format('YYYY-MM-DD'))
+    }
 
 
     const onDeleteHandler = async (valueing: string) => {
-        let DeletedStudents = data.filter((valu) => {
-            if (valueing !== valu.id) {
-                return valu;
-
-            }
-
-
-        })
-        setData([...DeletedStudents])
-        toast.warn('✌ Data successfully deleted', {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-        });
         try {
-            await deleteDoc(doc(db, "events", `${valueing}`));
+            const response = await axios.delete(`http://localhost:5000/Todo/${valueing}`);
+            let DeletedStudents = data.filter((valu) => {
+                if (valueing !== valu._id) {
+                    return valu;
+    
+                }
+    
+    
+            })
+            setData([...DeletedStudents])
+            toast.warn('✌ Data successfully deleted', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            
         } catch (error) {
-            console.log(error);
-
-
+            
         }
+        
+      
+       
 
 
     }
-    const onEditHandler = (val:any) => {
-        setFlag(true)
-        setIndexing(val.id)
-        setDating(val.Date)
-        setDescripting(val.Description)
-        setLocating(val.Location)
-        setTiming(val.Time)
-        setTitling(val.Title)
 
-
-    }
+    
     const onUpdateHandler = async() => {
         setFlag(false)
         let AddStudent: A = {
-            Title: titling,
-            Description: descripting,
-            Location: locating,
-            Date: dating,
-            Time: timing
+            title: titling,
+            description: descripting,
+            location: locating,
+            date: dating,
+            time: timing
 
 
         }
         let UpdatedStudents = data.map((value) => {
-            if (indexing === value.id) {
+            if (indexing === value._id) {
                 return AddStudent;
             }
             else {
@@ -192,6 +200,14 @@ const Dashboard = () => {
             }
 
         })
+        try {
+            const response = await axios.patch(`http://localhost:5000/Todo/${indexing}`, AddStudent);
+            console.log(indexing)
+            
+        } catch (error) {
+            console.log(error)
+            
+        }
         setData([...UpdatedStudents])
 
         setDescripting("")
@@ -200,16 +216,7 @@ const Dashboard = () => {
         setTiming("")
         setDating("")
 
-        try {
-            const washingtonRef = doc(db, "events", `${indexing}`);
-
-            // Set the "capital" field of the city 'DC'
-            await updateDoc(washingtonRef, AddStudent);
-
-        } catch (error) {
-            console.log(error)
-
-        }
+        
 
     }
 
@@ -240,7 +247,7 @@ const Dashboard = () => {
 
                         <div className="text-center">
                             {
-                                flag ? <button type="button" className="btn btn-warning  rounded-pill" onClick={onUpdateHandler}>Add Event</button> :
+                                flag ? <button type="button" className="btn btn-warning  rounded-pill" onClick={onUpdateHandler}>Update Event</button> :
 
                                     <button type="button" className="btn btn-primary  rounded-pill" onClick={onAddHandler}>Add Event</button>}
 
@@ -269,14 +276,14 @@ const Dashboard = () => {
                         return (
                             <tbody key={index}>
                                 <tr>
-                                    <th scope="row">{index + 1}</th>
-                                    <td>{value.Title}</td>
-                                    <td>{value.Description}</td>
-                                    <td>{value.Location}</td>
-                                    <td>{value.Time}</td>
-                                    <td>{value.Date}</td>
+                                    <th scope="row">{index+1}</th>
+                                    <td>{value.title}</td>
+                                    <td>{value.description}</td>
+                                    <td>{value.location}</td>
+                                    <td>{value.time}</td>
+                                    <td>{value.date}</td>
                                     <td>
-                                        <button type="button" className="btn btn-primary" onClick={() => onDeleteHandler(value.id)}>Delete</button>
+                                        <button type="button" className="btn btn-primary" onClick={() => onDeleteHandler(value._id)}>Delete</button>
                                     </td>
                                     <td>
                                         <button type="button" className="btn btn-warning" onClick={() => onEditHandler(value)}>Update</button>
